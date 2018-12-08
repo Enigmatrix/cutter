@@ -29,7 +29,9 @@ void CutterSamplePlugin::setupPlugin(CutterCore *core)
 CutterDockWidget* CutterSamplePlugin::setupInterface(MainWindow *main, QAction* actions)
 {
     // Instantiate dock widget
-    dockable = new CutterSamplePluginWidget(main, actions);
+    auto d = new CutterSamplePluginWidget(main, actions);
+    d->plugin = this;
+    dockable = d;
     return dockable;
 }
 
@@ -118,23 +120,23 @@ void CutterSamplePluginWidget::endSession()
 
 void CutterSamplePluginWidget::seekChanged(RVA addr)
 {
-    showNotificationPopup("Seek " + QString::number(addr));
+    showNotificationPopup("U Seek " + QString::number(addr));
 }
 
 void CutterSamplePluginWidget::commentsAdded(RVA addr, const QString &cmt){
-    showNotificationPopup("Added "+QString::number(addr) + ": " + cmt);
+    showNotificationPopup("U Added "+QString::number(addr) + ": " + cmt);
     if(!this->client) return;
     this->client->commentsAdded(addr, cmt);
 }
 
 void CutterSamplePluginWidget::functionRenamed(const QString &oldName, const QString &newName){
-    showNotificationPopup("Renamed fn " + oldName + " -> " + newName);
+    showNotificationPopup("U Renamed fn " + oldName + " -> " + newName);
     if(!this->client) return;
     //this->client->functionRenamed(oldName, newName);
 }
 
 void CutterSamplePluginWidget::commentsRemoved(RVA addr){
-    showNotificationPopup("Removed " +QString::number(addr));
+    showNotificationPopup("U Removed " +QString::number(addr));
     if(!this->client) return;
     this->client->commentsDeleted(addr);
 }
@@ -148,8 +150,10 @@ void CutterSamplePluginWidget::setupClient(QString token){
 
 void CutterSamplePluginWidget::onCommentsRemoved(RVA addr){
     showNotificationPopup("Moron Deleted "+QString::number(addr));
+    Core()->delCommentWithoutSignal(addr);
 }
 
 void CutterSamplePluginWidget::onCommentsAdded(RVA addr, QString cmt){
     showNotificationPopup("Moron Added "+QString::number(addr)+" :"+cmt);
+    Core()->setCommentWithoutSignal(addr, cmt);
 }
