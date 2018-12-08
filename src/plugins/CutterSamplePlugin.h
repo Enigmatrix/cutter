@@ -3,6 +3,7 @@
 
 #include <QObject>
 #include <QtPlugin>
+#include "popup.h"
 #include "CutterPlugin.h"
 #include "client.h"
 
@@ -26,9 +27,16 @@ public:
 
 private:
     QLabel* text;
+    PopUp* popUp;
     Client* client;
 
 private slots:
+    void showNotificationPopup(QString);
+
+    void createSession();
+    void joinSession();
+    void endSession();
+
     void seekChanged(RVA addr);
     void functionRenamed(const QString& oldName, const QString& newName);
     void commentsAdded(RVA addr, const QString& cmt);

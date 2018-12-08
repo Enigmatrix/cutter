@@ -1,5 +1,5 @@
 #include <QLabel>
-#include<QAction>
+#include <QAction>
 #include <QHBoxLayout>
 #include <QApplication>
 #include <QPushButton>
@@ -35,9 +35,20 @@ CutterDockWidget* CutterSamplePlugin::setupInterface(MainWindow *main, QAction* 
 CutterSamplePluginWidget::CutterSamplePluginWidget(MainWindow *main, QAction *action) :
     CutterDockWidget(main, action)
 {
-    auto createSessionAction = new QAction("Create Session");
-    auto joinSessionAction = new QAction("Join Session");
-    auto endSessionAction = new QAction("End Session");
+    QAction *createSessionAction = new QAction(tr("Create Session"));
+    QAction *joinSessionAction = new QAction(tr("Join Session"));
+    QAction *endSessionAction = new QAction(tr("End Session"));
+
+    QMenu* pluginsMenu = main->menuBar()->findChild<QMenu*>("menuPlugins");
+    QMenu* collabMenu = pluginsMenu->addMenu(tr("Collab"));
+
+    collabMenu->addAction(createSessionAction);
+    collabMenu->addAction(joinSessionAction);
+    collabMenu->addAction(endSessionAction);
+
+    connect(createSessionAction, &QAction::triggered, this, &CutterSamplePluginWidget::createSession);
+    connect(joinSessionAction, &QAction::triggered, this, &CutterSamplePluginWidget::joinSession);
+    connect(endSessionAction, &QAction::triggered, this, &CutterSamplePluginWidget::endSession);
 
     QWidget *content = new QWidget();
     this->setWidget(content);
@@ -46,18 +57,18 @@ CutterSamplePluginWidget::CutterSamplePluginWidget(MainWindow *main, QAction *ac
     content->setLayout(layout);
     text = new QLabel(content);
 
-    main->addMenuFileAction(createSessionAction);
-    main->addMenuFileAction(joinSessionAction);
-    main->addMenuFileAction(endSessionAction);
-
-    connect(createSessionAction, &QAction::triggered, this, &CutterSamplePluginWidget::createSessionClicked);
-    connect(joinSessionAction, &QAction::triggered, this, &CutterSamplePluginWidget::joinSessionClicked);
-    connect(endSessionAction, &QAction::triggered, this, &CutterSamplePluginWidget::endSessionClicked);
-
     connect(Core(), &CutterCore::seekChanged, this, &CutterSamplePluginWidget::seekChanged);
     connect(Core(), &CutterCore::functionRenamed, this, &CutterSamplePluginWidget::functionRenamed);
     connect(Core(), &CutterCore::commentsAdded, this, &CutterSamplePluginWidget::commentsAdded);
     connect(Core(), &CutterCore::commentsRemoved, this, &CutterSamplePluginWidget::commentsRemoved);
+
+    this->popUp = new PopUp();
+}
+
+void CutterSamplePluginWidget::showNotificationPopup(QString message)
+{
+    this->popUp->setPopupText(message);
+    this->popUp->show();
 }
 
 QString generateToken(){
@@ -69,37 +80,46 @@ QString generateToken(){
     return QString::fromLocal8Bit(str);
 }
 
-void CutterSamplePluginWidget::createSessionClicked(){
-    auto uuid = generateToken();
+void CutterSamplePluginWidget::createSession()
+{
+    auto token = generateToken();
 
-    QMessageBox msg;
-    msg.setText("Session created. Send this token to your teammates: "+uuid);
-    auto copyBtn = msg.addButton(tr("Copy"), QMessageBox::NoRole);
-    connect(copyBtn, &QPushButton::clicked, this, [&uuid](){
-        auto clipboard = QApplication::clipboard();
-        clipboard->setText(uuid);
-    });
-    msg.exec();
-    this->client = new Client(uuid);
+    QClipboard *clipboard = QApplication::clipboard();
+    clipboard->setText(token);
+    showNotificationPopup(QString(tr("Token copied to clipboard.")));
+
+    QString message = QString(tr("Collab session created. Send the token below to your collaborators.\n\n"
+                              "%1"))
+            .arg(token);
+    QMessageBox::information(this, tr("Create Collab Session"), message);
+    this->client = new Client(token);
 }
 
-void CutterSamplePluginWidget::joinSessionClicked(){
+void CutterSamplePluginWidget::joinSession()
+{
     bool ok;
-    QString token = QInputDialog::getText(nullptr, "Join Session",
-                                             "Session Token: ", QLineEdit::Normal,
+    QString token = QInputDialog::getText(0, tr("Join Collab Session"),
+                                             tr("Session token:"), QLineEdit::Normal,
                                              "", &ok);
-    if(ok && !token.isEmpty())
+
+    if (ok && !token.isEmpty())
+    {
         this->client = new Client(token);
+        showNotificationPopup(QString("Joined session %1.").arg(token));
+    }
 }
 
-void CutterSamplePluginWidget::endSessionClicked(){
+void CutterSamplePluginWidget::endSession()
+{
     if(!this->client) return;
-    delete this->client;
-    this->client = nullptr;
-
-    QMessageBox msg;
-    msg.setText("Session ended");
-    msg.exec();
+    QMessageBox::StandardButton reply;
+    reply = QMessageBox::question(this, tr("End Collab Session"), tr("Are you sure you want to terminate this collab session?"),
+                                  QMessageBox::Yes|QMessageBox::No);
+    if (reply == QMessageBox::Yes) {
+        delete this->client;
+        this->client = nullptr;
+        showNotificationPopup(QString(tr("Collab session ended.")));
+    }
 }
 
 void CutterSamplePluginWidget::seekChanged(RVA addr)
