@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+message Message {
+	string username = 2;
+	oneof body {
+		CommentAdded commentAdded = 8;
+		CommentDeleted commentDeleted = 9;
+	}
+}
+
+message CommentAdded {
+	uint64 addr = 1;
+	string cmt = 2;
+}
+
+message CommentDeleted {
+	uint64 addr = 1;
+}
+

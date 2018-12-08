@@ -66,7 +66,9 @@ void Client::commentsAdded(RVA addr, QString cmt) {
     c.cmt = cmt;
     qDebug() << "cmts added struct created";
     Message m;
+    qDebug() << "m1";
     m.type = MessageCommentAdded;
+    qDebug() << "m2";
     m.commentAdded = c;
     qDebug() << "cmts sending";
     send(&m);
