@@ -31,6 +31,9 @@ private slots:
     void functionRenamed(const QString& oldName, const QString& newName);
     void commentsAdded(RVA addr, const QString& cmt);
     void commentsRemoved(RVA addr);
+    void createSessionClicked();
+    void joinSessionClicked();
+    void endSessionClicked();
 };
 
 

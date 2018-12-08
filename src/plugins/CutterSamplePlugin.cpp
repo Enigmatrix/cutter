@@ -1,9 +1,13 @@
 #include <QLabel>
 #include<QAction>
 #include <QHBoxLayout>
+#include <QApplication>
 #include <QPushButton>
 #include <QMenuBar>
 #include <QMainWindow>
+#include <QMessageBox>
+#include <QUuid>
+#include <QClipboard>
 
 #include "CutterSamplePlugin.h"
 #include "common/TempConfig.h"
@@ -44,10 +48,49 @@ CutterSamplePluginWidget::CutterSamplePluginWidget(MainWindow *main, QAction *ac
     main->addMenuFileAction(joinSessionAction);
     main->addMenuFileAction(endSessionAction);
 
+    connect(createSessionAction, &QAction::triggered, this, &CutterSamplePluginWidget::createSessionClicked);
+    connect(joinSessionAction, &QAction::triggered, this, &CutterSamplePluginWidget::joinSessionClicked);
+    connect(endSessionAction, &QAction::triggered, this, &CutterSamplePluginWidget::endSessionClicked);
+
     connect(Core(), &CutterCore::seekChanged, this, &CutterSamplePluginWidget::seekChanged);
     connect(Core(), &CutterCore::functionRenamed, this, &CutterSamplePluginWidget::functionRenamed);
     connect(Core(), &CutterCore::commentsAdded, this, &CutterSamplePluginWidget::commentsAdded);
     connect(Core(), &CutterCore::commentsRemoved, this, &CutterSamplePluginWidget::commentsRemoved);
+}
+
+QString generateToken(){
+    char str[11];
+    for (int i = 0 ; i < 10; i++){
+        str[i] = (random() % 26) + 'A' + (random() % 2 ? 0x20 : 0);
+    }
+    str[10] = 0;
+    return QString::fromLocal8Bit(str);
+}
+
+void CutterSamplePluginWidget::createSessionClicked(){
+    auto uuid = generateToken();
+
+    QMessageBox msg;
+    msg.setText("Session created. Send this token to your teammates: "+uuid);
+    auto copyBtn = msg.addButton(tr("Copy"), QMessageBox::NoRole);
+    connect(copyBtn, &QPushButton::clicked, this, [&uuid](){
+        auto clipboard = QApplication::clipboard();
+        clipboard->setText(uuid);
+    });
+    msg.exec();
+    //use this token everywhere
+}
+
+void CutterSamplePluginWidget::joinSessionClicked(){
+    QMessageBox msg;
+    msg.setText("Session join");
+    msg.exec();
+}
+
+void CutterSamplePluginWidget::endSessionClicked(){
+    QMessageBox msg;
+    msg.setText("Session ended");
+    msg.exec();
 }
 
 void CutterSamplePluginWidget::seekChanged(RVA addr)
