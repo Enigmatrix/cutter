@@ -1,6 +1,4 @@
-#ifndef TYPES_H
-#define TYPES_H
-#include "Cutter.h"
+#include "CutterPlugin.h"
 
 typedef struct CommentAdded {
     RVA addr;
@@ -27,4 +25,3 @@ public:
     ~Message(){}
 } Message;
 
-#endif // TYPES_H

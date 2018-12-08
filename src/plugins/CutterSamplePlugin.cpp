@@ -88,13 +88,12 @@ void CutterSamplePluginWidget::joinSessionClicked(){
     QString token = QInputDialog::getText(nullptr, "Join Session",
                                              "Session Token: ", QLineEdit::Normal,
                                              "", &ok);
-    if(ok && !token.isEmpty()){
-        // CLIENT connect with this token
-    }
-    this->client = new Client(token);
+    if(ok && !token.isEmpty())
+        this->client = new Client(token);
 }
 
 void CutterSamplePluginWidget::endSessionClicked(){
+    if(!this->client) return;
     delete this->client;
     this->client = nullptr;
 
