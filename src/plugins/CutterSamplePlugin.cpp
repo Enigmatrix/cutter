@@ -21,7 +21,7 @@ CutterDockWidget* CutterSamplePlugin::setupInterface(MainWindow *main, QAction* 
     dockable = new CutterSamplePluginWidget(main, actions);
     return dockable;
 }
-
+QPushButton * button;
 CutterSamplePluginWidget::CutterSamplePluginWidget(MainWindow *main, QAction *action) :
     CutterDockWidget(main, action)
 {
@@ -37,7 +37,7 @@ CutterSamplePluginWidget::CutterSamplePluginWidget(MainWindow *main, QAction *ac
     text->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
     layout->addWidget(text);
 
-    QPushButton *button = new QPushButton(content);
+    button = new QPushButton(content);
     button->setText("Want a fortune?");
     button->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Maximum);
     button->setMaximumHeight(50);
@@ -46,6 +46,8 @@ CutterSamplePluginWidget::CutterSamplePluginWidget(MainWindow *main, QAction *ac
     layout->setAlignment(button, Qt::AlignHCenter);
 
     connect(Core(), &CutterCore::seekChanged, this, &CutterSamplePluginWidget::on_seekChanged);
+    connect(Core(), &CutterCore::commentsAdded, this, &CutterSamplePluginWidget::commentsAdded);
+    connect(Core(), &CutterCore::commentsRemoved, this, &CutterSamplePluginWidget::commentsRemoved);
     connect(button, &QPushButton::clicked, this, &CutterSamplePluginWidget::on_buttonClicked);
 }
 
@@ -65,4 +67,13 @@ void CutterSamplePluginWidget::on_buttonClicked()
 {
     QString res = Core()->cmd("?E `fo`");
     text->setText(res);
+}
+
+void CutterSamplePluginWidget::commentsAdded(RVA addr, const QString &cmt){
+    button->setText("Added "+QString::number(addr) + ": " + cmt);
+}
+
+
+void CutterSamplePluginWidget::commentsRemoved(RVA addr){
+    button->setText("Removed " +QString::number(addr));
 }

@@ -635,6 +635,8 @@ signals:
     void functionsChanged();
     void flagsChanged();
     void commentsChanged();
+    void commentsAdded(RVA addr, const QString &cmd);
+    void commentsRemoved(RVA addr);
     void registersChanged();
     void instructionChanged(RVA offset);
     void breakpointsChanged();

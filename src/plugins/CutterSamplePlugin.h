@@ -29,6 +29,8 @@ private:
 private slots:
     void on_seekChanged(RVA addr);
     void on_buttonClicked();
+    void commentsAdded(RVA addr, const QString& cmt);
+    void commentsRemoved(RVA addr);
 };
 
 

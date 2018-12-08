@@ -507,12 +507,14 @@ void CutterCore::setComment(RVA addr, const QString &cmt)
 {
     cmd("CCu base64:" + cmt.toLocal8Bit().toBase64() + " @ " + QString::number(addr));
     emit commentsChanged();
+    emit commentsAdded(addr, cmt);
 }
 
 void CutterCore::delComment(RVA addr)
 {
     cmd("CC- @ " + QString::number(addr));
     emit commentsChanged();
+    emit commentsRemoved(addr);
 }
 
 void CutterCore::setImmediateBase(const QString &r2BaseName, RVA offset)
