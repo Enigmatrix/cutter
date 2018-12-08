@@ -29,9 +29,7 @@ void CutterSamplePlugin::setupPlugin(CutterCore *core)
 CutterDockWidget* CutterSamplePlugin::setupInterface(MainWindow *main, QAction* actions)
 {
     // Instantiate dock widget
-    auto d = new CutterSamplePluginWidget(main, actions);
-    d->plugin = this;
-    dockable = d;
+    dockable = new CutterSamplePluginWidget(main, actions);
     return dockable;
 }
 
