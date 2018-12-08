@@ -403,6 +403,7 @@ public:
 
     /* Functions methods */
     void renameFunction(const QString &oldName, const QString &newName);
+    void renameFunctionWithoutSignal(const QString &oldName, const QString &newName);
     void delFunction(RVA addr);
     void renameFlag(QString old_name, QString new_name);
     RAnalFunction *functionAt(ut64 addr);

@@ -57,6 +57,7 @@ CutterSamplePluginWidget::CutterSamplePluginWidget(MainWindow *main, QAction *ac
     connect(Core(), &CutterCore::commentsAdded, this, &CutterSamplePluginWidget::commentsAdded);
     connect(Core(), &CutterCore::commentsRemoved, this, &CutterSamplePluginWidget::commentsRemoved);
 
+    //main->findChild<DrawChildren>("DisassemblyWidget")
     this->popUp = new PopUp();
 }
 
@@ -116,7 +117,6 @@ void CutterSamplePluginWidget::joinSession()
     QString token = QInputDialog::getText(0, tr("Join Collab Session"),
                                              tr("Session token:"), QLineEdit::Normal,
                                              "", &ok);
-
     if (ok && !token.isEmpty())
     {
         auto nick = getNickNamePopup();
@@ -166,6 +166,7 @@ void CutterSamplePluginWidget::setupClient(QString token, QString nick){
     this->client = new Client(token, nick);
     this->client->onCommentsDeleted = std::bind(&CutterSamplePluginWidget::onCommentsRemoved, this, std::placeholders::_1);
     this->client->onCommentsAdded = std::bind(&CutterSamplePluginWidget::onCommentsAdded, this, std::placeholders::_1, std::placeholders::_2);
+    //this->client->onFunctionRenamed = std::bind(&CutterSamplePluginWidget::onFunctionRenamed, this, std::placeholders::_1, std::placeholders::_2);
 }
 
 
@@ -177,4 +178,8 @@ void CutterSamplePluginWidget::onCommentsRemoved(RVA addr){
 void CutterSamplePluginWidget::onCommentsAdded(RVA addr, QString cmt){
     showNotificationPopup("Moron Added "+QString::number(addr)+" :"+cmt);
     Core()->setCommentWithoutSignal(addr, cmt);
+}
+
+void CutterSamplePluginWidget::onFunctionRenamed(QString oldName, QString newName){
+    Core()->renameFunctionWithoutSignal(oldName, newName);
 }

@@ -46,6 +46,7 @@ private slots:
     void joinSessionClicked();
     void endSessionClicked();
     void onCommentsAdded(RVA, QString);
+    void onFunctionRenamed(QString, QString);
     void onCommentsRemoved(RVA);
 };
 

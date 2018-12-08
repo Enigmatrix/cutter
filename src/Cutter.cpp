@@ -406,7 +406,7 @@ void CutterCore::openFile(QString path, RVA mapaddr)
 
 void CutterCore::renameFunction(const QString &oldName, const QString &newName)
 {
-    renameFunctionWithoutSignal(oldName, newName)
+    renameFunctionWithoutSignal(oldName, newName);
     emit functionRenamed(oldName, newName);
 }
 
