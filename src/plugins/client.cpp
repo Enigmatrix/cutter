@@ -26,60 +26,73 @@ void Client::listen() {
     qDebug() << res;
     connect(res, &QNetworkReply::readyRead, this, &Client::onReadyRead);
 }
+bool wantsHeader = true;
+int consumeBodySize = 0;
 void Client::onReadyRead() {
     qDebug() << "ready";
-    qDebug() << res;
-    if (res->bytesAvailable() < sizeof(Message)) {
+    int consume = 0;
+    switch (wantsHeader) {
+    case true:
+        consume = 2;
+        break;
+    case false:
+        consume = consumeBodySize;
+        break;
+    }
+    if (res->bytesAvailable() < consume) {
         return;
     }
-    auto bytes = res->read(sizeof(Message));
-    auto m = reinterpret_cast<Message*>(bytes.data());
-    understandMessage(m);
-}
-
-void Client::understandMessage(Message* m) {
-    switch (m->type) {
-        case MessageCommentAdded:
-            if (onCommentsAdded) onCommentsAdded(m->commentAdded.addr, m->commentAdded.cmt);
-            break;
-        case MessageCommentDeleted:
-            if (onCommentsDeleted) onCommentsDeleted(m->commentDeleted.addr);
-            break;
+    auto bytes = res->read(consume);
+    switch (wantsHeader) {
+    case true:
+        consumeBodySize = (static_cast<unsigned int>(bytes[0]) & 0xFF) << 8
+                        + (static_cast<unsigned int>(bytes[1]) & 0xFF);
+        wantsHeader = false;
+        break;
+    case false:
+        wantsHeader = true;
+        auto m = Message();
+        m.ParseFromArray(bytes, consume);
+        understandMessage(m);
+        break;
     }
 }
 
-void Client::send(Message *m) {
+void Client::understandMessage(Message m) {
+    if (m.has_commentadded()) {
+        if (onCommentsAdded) onCommentsAdded(m.commentadded().addr(), QString::fromStdString(m.commentadded().cmt()));
+    } else if (m.has_commentdeleted()) {
+        if (onCommentsDeleted) onCommentsDeleted(m.commentdeleted().addr());
+    }
+}
+
+void Client::send(Message m) {
+    m.set_username(username.toStdString());
     qDebug() << "making req..";
     auto req = QNetworkRequest(url);
     qDebug() << &req;
-    qDebug() << "making byte array...";
-    auto body = QByteArray(reinterpret_cast<char*>(m), sizeof(Message));
-    qDebug() << &body;
+    size_t size = m.ByteSize();
+    auto body = malloc(size);
+    m.SerializeToArray(body, size);
     qDebug() << "posting...";
-    networkManager->post(req, body);
+    networkManager->post(req, QByteArray((const char*)body, size));
     qDebug() << "posted";
 }
 void Client::commentsAdded(RVA addr, QString cmt) {
     qDebug() << "cmts add";
-    CommentAdded c;
-    c.addr = addr;
-    c.cmt = cmt;
-    qDebug() << "cmts added struct created";
-    Message m;
-    qDebug() << "m1";
-    m.type = MessageCommentAdded;
-    qDebug() << "m2";
-    m.commentAdded = c;
-    qDebug() << "cmts sending";
-    send(&m);
+    auto c = CommentAdded();
+    c.set_addr(addr);
+    c.set_cmt(cmt.toStdString());
+    auto m = Message();
+    m.set_allocated_commentadded(&c);
+    send(m);
 }
 
 void Client::commentsDeleted(RVA addr) {
     qDebug() << "cmts rmved";
-    CommentDeleted c;
-    c.addr = addr;
-    Message m;
-    m.type = MessageCommentDeleted;
-    m.commentDeleted = c;
-    send(&m);
+    auto c = CommentDeleted();
+    c.set_addr(addr);
+    auto m = Message();
+    m.set_allocated_commentdeleted(&c);
+    send(m);
 }

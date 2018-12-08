@@ -1,3 +1,3 @@
 #!/bin/sh
 
-protoc --cpp_out=. client.proto
+protoc -I=. --cpp_out=. client.proto

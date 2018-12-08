@@ -1,14 +1,12 @@
 HEADERS        += CutterSamplePlugin.h CutterPlugin.h \
     client.pb.h \
     client.h \
-    popup.h \
-    client.pb.h
+    popup.h
 INCLUDEPATH    += ../ ../../build
 SOURCES        += CutterSamplePlugin.cpp \
     client.pb.cc \
     client.cpp \
-    popup.cpp \
-    client.pb.cc
+    popup.cpp
 
 QMAKE_POST_LINK += "mkdir -p $${_PRO_FILE_PWD_}/../../build/plugins/ && cp $${_PRO_FILE_PWD_}/*.so $${_PRO_FILE_PWD_}/../../build/plugins/$$escape_expand(\n\t)"
 

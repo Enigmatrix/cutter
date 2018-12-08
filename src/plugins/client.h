@@ -8,7 +8,7 @@
 #include <QObject>
 #include <functional>
 #include "CutterPlugin.h"
-#include "types.h"
+#include "client.pb.h"
 
 class Client : public QObject
 {
@@ -18,10 +18,11 @@ class Client : public QObject
     QUrl url;
     QUuid uuid;
     QString token;
+    QString username;
     QNetworkReply* res;
-    void send(Message*);
+    void send(Message);
     void listen();
-    void understandMessage(Message*);
+    void understandMessage(Message);
 public:
     Client(QString);
     void commentsAdded(RVA, QString);
