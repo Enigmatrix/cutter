@@ -31,6 +31,8 @@ func handle(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	log.Print(r.Method, token, uuid)
+
 	if r.Method == http.MethodGet {
 		w.Header().Set("Transfer-Encoding", "chunked")
 		w.Header().Set("Content-Type", "application/octet-stream")
