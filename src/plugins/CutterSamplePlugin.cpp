@@ -37,10 +37,11 @@ CutterSamplePluginWidget::CutterSamplePluginWidget(MainWindow *main, QAction *ac
     QAction *endSessionAction = new QAction(tr("End Session"));
 
     QMenu* pluginsMenu = main->menuBar()->findChild<QMenu *>("menuPlugins");
+    QMenu* collabMenu = pluginsMenu->addMenu(tr("Collab"));
 
-    pluginsMenu->addAction(createSessionAction);
-    pluginsMenu->addAction(joinSessionAction);
-    pluginsMenu->addAction(endSessionAction);
+    collabMenu->addAction(createSessionAction);
+    collabMenu->addAction(joinSessionAction);
+    collabMenu->addAction(endSessionAction);
 
     connect(createSessionAction, &QAction::triggered, this, &CutterSamplePluginWidget::createSession);
     connect(joinSessionAction, &QAction::triggered, this, &CutterSamplePluginWidget::joinSession);
