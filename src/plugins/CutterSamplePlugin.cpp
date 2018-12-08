@@ -9,10 +9,10 @@
 void CutterSamplePlugin::setupPlugin(CutterCore *core)
 {
     this->core = core;
-    this->name = "SamplePlugin";
-    this->description = "Just a sample plugin.";
-    this->version = "1.0";
-    this->author = "xarkes";
+    this->name = "CollabCutter";
+    this->description = "Collaborative Reversing in Cutter/Radare2";
+    this->version = "0.01-ALPHA1";
+    this->author = "OSI Layer 8";
 }
 
 CutterDockWidget* CutterSamplePlugin::setupInterface(MainWindow *main, QAction* actions)
