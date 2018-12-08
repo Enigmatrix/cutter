@@ -5,6 +5,7 @@
 #include <QtPlugin>
 #include "popup.h"
 #include "CutterPlugin.h"
+#include "client.h"
 
 class CutterSamplePlugin : public QObject, CutterPlugin
 {
@@ -27,6 +28,7 @@ public:
 private:
     QLabel* text;
     PopUp* popUp;
+    Client* client;
 
 private slots:
     void showNotificationPopup(QString);
@@ -39,6 +41,9 @@ private slots:
     void functionRenamed(const QString& oldName, const QString& newName);
     void commentsAdded(RVA addr, const QString& cmt);
     void commentsRemoved(RVA addr);
+    void createSessionClicked();
+    void joinSessionClicked();
+    void endSessionClicked();
 };
 
 
