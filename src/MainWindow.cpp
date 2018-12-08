@@ -1003,3 +1003,7 @@ void MainWindow::addDockWidgetAction(QDockWidget *dockWidget, QAction *action)
 {
     this->dockWidgetActions[action] = dockWidget;
 }
+
+void MainWindow::addMenuFileAction(QAction* action){
+    this->menuBar()->findChild<QMenu*>("menuFile")->addAction(action);
+}

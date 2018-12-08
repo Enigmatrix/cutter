@@ -1,10 +1,14 @@
 #include <QLabel>
+#include<QAction>
 #include <QHBoxLayout>
 #include <QPushButton>
+#include <QMenuBar>
+#include <QMainWindow>
 
 #include "CutterSamplePlugin.h"
 #include "common/TempConfig.h"
 #include "common/Configuration.h"
+#include "MainWindow.h"
 
 void CutterSamplePlugin::setupPlugin(CutterCore *core)
 {
@@ -25,25 +29,21 @@ CutterDockWidget* CutterSamplePlugin::setupInterface(MainWindow *main, QAction* 
 CutterSamplePluginWidget::CutterSamplePluginWidget(MainWindow *main, QAction *action) :
     CutterDockWidget(main, action)
 {
-    this->setObjectName("CutterSamplePluginWidget");
-    this->setWindowTitle("Sample Plugin");
+    auto createSessionAction = new QAction("Create Session");
+    auto joinSessionAction = new QAction("Join Session");
+    auto endSessionAction = new QAction("End Session");
+
     QWidget *content = new QWidget();
     this->setWidget(content);
 
     QVBoxLayout *layout = new QVBoxLayout(this);
     content->setLayout(layout);
     text = new QLabel(content);
-    text->setFont(Config()->getFont());
-    text->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
-    layout->addWidget(text);
 
-    QPushButton* button = new QPushButton(content);
-    button->setText("Want a fortune?");
-    button->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Maximum);
-    button->setMaximumHeight(50);
-    button->setMaximumWidth(200);
-    layout->addWidget(button);
-    layout->setAlignment(button, Qt::AlignHCenter);
+    main->addMenuFileAction(createSessionAction);
+    main->addMenuFileAction(joinSessionAction);
+    main->addMenuFileAction(endSessionAction);
+
     connect(Core(), &CutterCore::seekChanged, this, &CutterSamplePluginWidget::seekChanged);
     connect(Core(), &CutterCore::functionRenamed, this, &CutterSamplePluginWidget::functionRenamed);
     connect(Core(), &CutterCore::commentsAdded, this, &CutterSamplePluginWidget::commentsAdded);
