@@ -20,7 +20,10 @@ Client::Client(QString token)
 
 void Client::listen() {
     auto req = QNetworkRequest(url);
+    req.setRawHeader("X-Client-UUID", uuid.toByteArray());
+    qDebug() << "listening..";
     res = networkManager->get(req);
+    qDebug() << res;
     connect(res, &QNetworkReply::readyRead, this, &Client::onReadyRead);
 }
 void Client::onReadyRead() {
@@ -57,16 +60,20 @@ void Client::send(Message *m) {
     qDebug() << "posted";
 }
 void Client::commentsAdded(RVA addr, QString cmt) {
+    qDebug() << "cmts add";
     CommentAdded c;
     c.addr = addr;
     c.cmt = cmt;
+    qDebug() << "cmts added struct created";
     Message m;
     m.type = MessageCommentAdded;
     m.commentAdded = c;
+    qDebug() << "cmts sending";
     send(&m);
 }
 
 void Client::commentsDeleted(RVA addr) {
+    qDebug() << "cmts rmved";
     CommentDeleted c;
     c.addr = addr;
     Message m;
