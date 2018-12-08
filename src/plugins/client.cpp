@@ -21,16 +21,17 @@ Client::Client(QString token)
 void Client::listen() {
     auto req = QNetworkRequest(url);
     auto res = networkManager->get(req);
-    connect(res, SIGNAL(readyRead()), SLOT(onReadyRead(res)));
+    connect(res, SIGNAL(readyRead()), SLOT(onReadyRead(&res)));
 }
-void Client::onReadyRead(QIODevice in) {
-    if (in.bytesAvailable() < sizeof(Message)) {
+void Client::onReadyRead(QIODevice* in) {
+    if (in->bytesAvailable() < sizeof(Message)) {
         return;
     }
-    auto bytes = in.read(sizeof(Message));
-    auto m = reinterpret_cast<Message*>(bytes.constData());
-    understandMessage(Message* m);
+    auto bytes = in->read(sizeof(Message));
+    auto m = reinterpret_cast<Message*>(bytes.data());
+    understandMessage(m);
 }
+
 void Client::understandMessage(Message* m) {
     switch (m->type) {
         case MessageCommentAdded:

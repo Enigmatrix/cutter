@@ -3,6 +3,7 @@
 
 #include <QObject>
 #include <QtPlugin>
+#include "popup.h"
 #include "CutterPlugin.h"
 #include "client.h"
 
@@ -25,10 +26,17 @@ public:
     explicit CutterSamplePluginWidget(MainWindow *main, QAction *action);
 
 private:
-    QLabel* text;
+    PopUp* popUp;
     Client* client;
+    void setupClient(QString token);
 
 private slots:
+    void showNotificationPopup(QString);
+
+    void createSession();
+    void joinSession();
+    void endSession();
+
     void seekChanged(RVA addr);
     void functionRenamed(const QString& oldName, const QString& newName);
     void commentsAdded(RVA addr, const QString& cmt);
@@ -36,6 +44,8 @@ private slots:
     void createSessionClicked();
     void joinSessionClicked();
     void endSessionClicked();
+    void onCommentsAdded(RVA, QString);
+    void onCommentsRemoved(RVA);
 };
 
 

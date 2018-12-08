@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1013</width>
+    <width>1088</width>
     <height>606</height>
    </rect>
   </property>
@@ -80,8 +80,8 @@ QToolTip {
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1013</width>
-     <height>20</height>
+     <width>1088</width>
+     <height>12</height>
     </rect>
    </property>
    <property name="defaultUp">
@@ -95,8 +95,8 @@ QToolTip {
      <rect>
       <x>378</x>
       <y>100</y>
-      <width>139</width>
-      <height>240</height>
+      <width>57</width>
+      <height>160</height>
      </rect>
     </property>
     <property name="title">
@@ -216,11 +216,17 @@ QToolTip {
      <string>Debug</string>
     </property>
    </widget>
+   <widget class="QMenu" name="menuPlugins">
+    <property name="title">
+     <string>Plugins</string>
+    </property>
+   </widget>
    <addaction name="menuFile"/>
    <addaction name="menuEdit"/>
    <addaction name="menuView"/>
    <addaction name="menuWindows"/>
    <addaction name="menuDebug"/>
+   <addaction name="menuPlugins"/>
    <addaction name="menuHelp"/>
   </widget>
   <widget class="QToolBar" name="mainToolBar">
