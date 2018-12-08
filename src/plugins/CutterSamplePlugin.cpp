@@ -50,13 +50,6 @@ CutterSamplePluginWidget::CutterSamplePluginWidget(MainWindow *main, QAction *ac
     connect(joinSessionAction, &QAction::triggered, this, &CutterSamplePluginWidget::joinSession);
     connect(endSessionAction, &QAction::triggered, this, &CutterSamplePluginWidget::endSession);
 
-    QWidget *content = new QWidget();
-    this->setWidget(content);
-
-    QVBoxLayout *layout = new QVBoxLayout(this);
-    content->setLayout(layout);
-    text = new QLabel(content);
-
     connect(Core(), &CutterCore::seekChanged, this, &CutterSamplePluginWidget::seekChanged);
     connect(Core(), &CutterCore::functionRenamed, this, &CutterSamplePluginWidget::functionRenamed);
     connect(Core(), &CutterCore::commentsAdded, this, &CutterSamplePluginWidget::commentsAdded);
@@ -124,23 +117,23 @@ void CutterSamplePluginWidget::endSession()
 
 void CutterSamplePluginWidget::seekChanged(RVA addr)
 {
-    text->setText("Seek " + QString::number(addr));
+    showNotificationPopup("Seek " + QString::number(addr));
 }
 
 void CutterSamplePluginWidget::commentsAdded(RVA addr, const QString &cmt){
-    text->setText("Added "+QString::number(addr) + ": " + cmt);
+    showNotificationPopup("Added "+QString::number(addr) + ": " + cmt);
     if(!this->client) return;
     this->client->commentsAdded(addr, cmt);
 }
 
 void CutterSamplePluginWidget::functionRenamed(const QString &oldName, const QString &newName){
-    text->setText("Renamed fn " + oldName + " -> " + newName);
+    showNotificationPopup("Renamed fn " + oldName + " -> " + newName);
     if(!this->client) return;
     //this->client->functionRenamed(oldName, newName);
 }
 
 void CutterSamplePluginWidget::commentsRemoved(RVA addr){
-    text->setText("Removed " +QString::number(addr));
+    showNotificationPopup("Removed " +QString::number(addr));
     if(!this->client) return;
     this->client->commentsDeleted(addr);
 }

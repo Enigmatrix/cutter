@@ -12,12 +12,13 @@ PopUp::PopUp(QWidget *parent) : QWidget(parent)
     setAttribute(Qt::WA_TranslucentBackground);     // Indicates that the background will be transparent
     setAttribute(Qt::WA_ShowWithoutActivating);     // At the show, the widget does not get the focus automatically
 
+
     animation.setTargetObject(this);                // Set the target animation
     animation.setPropertyName("popupOpacity");      //
     connect(&animation, &QAbstractAnimation::finished, this, &PopUp::hide);
 
     label.setAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
-    label.setStyleSheet("QLabel { color : white; "
+    label.setStyleSheet("QLabel { color : black; "
                         "background-color: rgba(0, 0, 0, 0%);"
                         "margin-top: 6px;"
                         "margin-bottom: 6px;"
@@ -44,7 +45,7 @@ void PopUp::paintEvent(QPaintEvent *event)
     roundedRect.setWidth(rect().width() - 10);
     roundedRect.setHeight(rect().height() - 10);
 
-    painter.setBrush(QBrush(QColor(0,0,0,180)));
+    painter.setBrush(QBrush(QColor(0xff,0x91,0x00,180)));
     painter.setPen(Qt::NoPen);
 
     painter.drawRoundedRect(roundedRect, 10, 10);

@@ -26,7 +26,6 @@ public:
     explicit CutterSamplePluginWidget(MainWindow *main, QAction *action);
 
 private:
-    QLabel* text;
     PopUp* popUp;
     Client* client;
 
