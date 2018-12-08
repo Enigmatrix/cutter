@@ -28,6 +28,19 @@ void Client::onReadyRead(QIODevice* in) {
         return;
     }
     auto bytes = in->read(sizeof(Message));
+    auto m = reinterpret_cast<Message*>(bytes.data());
+    understandMessage(m);
+}
+
+void Client::understandMessage(Message* m) {
+    switch (m->type) {
+        case MessageCommentAdded:
+            if (onCommentsAdded) onCommentsAdded(m->commentAdded.addr, m->commentAdded.cmt);
+            break;
+        case MessageCommentDeleted:
+            if (onCommentsDeleted) onCommentsDeleted(m->commentDeleted.addr);
+            break;
+    }
 }
 
 void Client::send(Message *m) {

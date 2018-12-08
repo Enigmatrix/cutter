@@ -20,10 +20,13 @@ class Client : public QObject
     void send(Message*);
     void listen();
     void onReadyRead(QIODevice*);
+    void understandMessage(Message*);
 public:
     Client(QString);
     void commentsAdded(RVA, QString);
+    void (*onCommentsAdded)(RVA, QString);
     void commentsDeleted(RVA);
+    void (*onCommentsDeleted)(RVA);
 };
 
 #endif // CLIENT_H
