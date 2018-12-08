@@ -9,11 +9,12 @@
 #include <QNetworkReply>
 #include <QByteArray>
 
-Client::Client(QString token)
+Client::Client(QString token, QString nick)
 {
     uuid = QUuid::createUuid();
     networkManager = new QNetworkAccessManager();
     url = QUrl("http://makerforce.io:8080");
+    //do smth with nick here
     url.setPath("/" + token);
     listen();
 }

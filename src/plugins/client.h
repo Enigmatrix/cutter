@@ -23,7 +23,7 @@ class Client : public QObject
     void listen();
     void understandMessage(Message*);
 public:
-    Client(QString);
+    Client(QString, QString);
     void commentsAdded(RVA, QString);
     std::function<void(RVA, QString)> onCommentsAdded;
     void commentsDeleted(RVA);

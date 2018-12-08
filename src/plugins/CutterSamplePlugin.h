@@ -28,7 +28,7 @@ public:
 private:
     PopUp* popUp;
     Client* client;
-    void setupClient(QString token);
+    void setupClient(QString token, QString nick);
 
 private slots:
     void showNotificationPopup(QString);

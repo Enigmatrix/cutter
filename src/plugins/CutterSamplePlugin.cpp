@@ -74,6 +74,18 @@ QString generateToken(){
     return QString::fromLocal8Bit(str);
 }
 
+QString getNickNamePopup(){
+
+    bool ok;
+    QString token = QInputDialog::getText(0, "Enter Nick Name",
+                                             "Nick Name : ", QLineEdit::Normal,
+                                             "", &ok);
+
+    if (ok && !token.isEmpty())
+        return token;
+    return nullptr;
+}
+
 void CutterSamplePluginWidget::createSession()
 {
     auto token = generateToken();
@@ -86,7 +98,9 @@ void CutterSamplePluginWidget::createSession()
                               "%1"))
             .arg(token);
     QMessageBox::information(this, tr("Create Collab Session"), message);
-    setupClient(token);
+    auto nick = getNickNamePopup();
+    if(nick == nullptr) return
+    setupClient(token, nick);
 }
 
 void CutterSamplePluginWidget::joinSession()
@@ -98,7 +112,9 @@ void CutterSamplePluginWidget::joinSession()
 
     if (ok && !token.isEmpty())
     {
-        setupClient(token);
+        auto nick = getNickNamePopup();
+        if(nick == nullptr) return;
+        setupClient(token, nick);
         showNotificationPopup(QString("Joined session %1.").arg(token));
     }
 }
@@ -139,8 +155,8 @@ void CutterSamplePluginWidget::commentsRemoved(RVA addr){
     this->client->commentsDeleted(addr);
 }
 
-void CutterSamplePluginWidget::setupClient(QString token){
-    this->client = new Client(token);
+void CutterSamplePluginWidget::setupClient(QString token, QString nick){
+    this->client = new Client(token, nick);
     this->client->onCommentsDeleted = std::bind(&CutterSamplePluginWidget::onCommentsRemoved, this, std::placeholders::_1);
     this->client->onCommentsAdded = std::bind(&CutterSamplePluginWidget::onCommentsAdded, this, std::placeholders::_1, std::placeholders::_2);
 }

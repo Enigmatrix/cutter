@@ -406,8 +406,13 @@ void CutterCore::openFile(QString path, RVA mapaddr)
 
 void CutterCore::renameFunction(const QString &oldName, const QString &newName)
 {
-    cmdRaw("afn " + newName + " " + oldName);
+    renameFunctionWithoutSignal(oldName, newName)
     emit functionRenamed(oldName, newName);
+}
+
+void CutterCore::renameFunctionWithoutSignal(const QString &oldName, const QString &newName)
+{
+    cmdRaw("afn " + newName + " " + oldName);
 }
 
 void CutterCore::delFunction(RVA addr)
