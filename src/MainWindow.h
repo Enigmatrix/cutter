@@ -101,6 +101,7 @@ public:
     void addExtraWidget(QDockWidget *extraDock);
 
     void updateDockActionChecked(QAction * action);
+    void addMenuFileAction(QAction* action);
 
 
 public slots:
