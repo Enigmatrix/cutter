@@ -18,9 +18,9 @@ class Client : public QObject
     QUrl url;
     QUuid uuid;
     QString token;
+    QNetworkReply* res;
     void send(Message*);
     void listen();
-    void onReadyRead(QIODevice*);
     void understandMessage(Message*);
 public:
     Client(QString);
@@ -28,6 +28,8 @@ public:
     std::function<void(RVA, QString)> onCommentsAdded;
     void commentsDeleted(RVA);
     std::function<void(RVA)> onCommentsDeleted;
+public slots:
+    void onReadyRead();
 };
 
 #endif // CLIENT_H

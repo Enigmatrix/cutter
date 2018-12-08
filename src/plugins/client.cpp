@@ -20,14 +20,16 @@ Client::Client(QString token)
 
 void Client::listen() {
     auto req = QNetworkRequest(url);
-    auto res = networkManager->get(req);
-    connect(res, SIGNAL(readyRead()), SLOT(onReadyRead(&res)));
+    res = networkManager->get(req);
+    connect(res, &QNetworkReply::readyRead, this, &Client::onReadyRead);
 }
-void Client::onReadyRead(QIODevice* in) {
-    if (in->bytesAvailable() < sizeof(Message)) {
+void Client::onReadyRead() {
+    qDebug() << "ready";
+    qDebug() << res;
+    if (res->bytesAvailable() < sizeof(Message)) {
         return;
     }
-    auto bytes = in->read(sizeof(Message));
+    auto bytes = res->read(sizeof(Message));
     auto m = reinterpret_cast<Message*>(bytes.data());
     understandMessage(m);
 }
@@ -44,9 +46,15 @@ void Client::understandMessage(Message* m) {
 }
 
 void Client::send(Message *m) {
+    qDebug() << "making req..";
     auto req = QNetworkRequest(url);
+    qDebug() << &req;
+    qDebug() << "making byte array...";
     auto body = QByteArray(reinterpret_cast<char*>(m), sizeof(Message));
+    qDebug() << &body;
+    qDebug() << "posting...";
     networkManager->post(req, body);
+    qDebug() << "posted";
 }
 void Client::commentsAdded(RVA addr, QString cmt) {
     CommentAdded c;
