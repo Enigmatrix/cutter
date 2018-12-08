@@ -8,6 +8,7 @@
 #include <QMessageBox>
 #include <QUuid>
 #include <QClipboard>
+#include <QInputDialog>
 
 #include "CutterSamplePlugin.h"
 #include "common/TempConfig.h"
@@ -78,16 +79,22 @@ void CutterSamplePluginWidget::createSessionClicked(){
         clipboard->setText(uuid);
     });
     msg.exec();
-    //use this token everywhere
+    // CLIENT use this token everywhere
 }
 
 void CutterSamplePluginWidget::joinSessionClicked(){
-    QMessageBox msg;
-    msg.setText("Session join");
-    msg.exec();
+    bool ok;
+    QString token = QInputDialog::getText(nullptr, "Join Session",
+                                             "Session Token: ", QLineEdit::Normal,
+                                             "", &ok);
+    if(ok && !token.isEmpty()){
+        // CLIENT connect with this token
+    }
 }
 
 void CutterSamplePluginWidget::endSessionClicked(){
+    // CLIENT session end
+
     QMessageBox msg;
     msg.setText("Session ended");
     msg.exec();
