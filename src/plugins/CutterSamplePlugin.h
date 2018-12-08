@@ -28,6 +28,7 @@ public:
 private:
     PopUp* popUp;
     Client* client;
+    void setupClient(QString token);
 
 private slots:
     void showNotificationPopup(QString);
@@ -43,6 +44,8 @@ private slots:
     void createSessionClicked();
     void joinSessionClicked();
     void endSessionClicked();
+    void onCommentsAdded(RVA, QString);
+    void onCommentsRemoved(RVA);
 };
 
 

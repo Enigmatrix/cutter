@@ -9,6 +9,7 @@
 #include <QUuid>
 #include <QClipboard>
 #include <QInputDialog>
+#include <functional>
 
 #include "CutterSamplePlugin.h"
 #include "common/TempConfig.h"
@@ -85,7 +86,7 @@ void CutterSamplePluginWidget::createSession()
                               "%1"))
             .arg(token);
     QMessageBox::information(this, tr("Create Collab Session"), message);
-    this->client = new Client(token);
+    setupClient(token);
 }
 
 void CutterSamplePluginWidget::joinSession()
@@ -97,7 +98,7 @@ void CutterSamplePluginWidget::joinSession()
 
     if (ok && !token.isEmpty())
     {
-        this->client = new Client(token);
+        setupClient(token);
         showNotificationPopup(QString("Joined session %1.").arg(token));
     }
 }
@@ -136,4 +137,19 @@ void CutterSamplePluginWidget::commentsRemoved(RVA addr){
     showNotificationPopup("Removed " +QString::number(addr));
     if(!this->client) return;
     this->client->commentsDeleted(addr);
+}
+
+void CutterSamplePluginWidget::setupClient(QString token){
+    this->client = new Client(token);
+    this->client->onCommentsDeleted = std::bind(&CutterSamplePluginWidget::onCommentsRemoved, this, std::placeholders::_1);
+    this->client->onCommentsAdded = std::bind(&CutterSamplePluginWidget::onCommentsAdded, this, std::placeholders::_1, std::placeholders::_2);
+}
+
+
+void CutterSamplePluginWidget::onCommentsRemoved(RVA addr){
+    showNotificationPopup("Moron Deleted "+QString::number(addr));
+}
+
+void CutterSamplePluginWidget::onCommentsAdded(RVA addr, QString cmt){
+    showNotificationPopup("Moron Added "+QString::number(addr)+" :"+cmt);
 }

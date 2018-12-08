@@ -6,6 +6,7 @@
 #include <QNetworkAccessManager>
 #include <QUrl>
 #include <QObject>
+#include <functional>
 #include "CutterPlugin.h"
 #include "types.h"
 
@@ -24,9 +25,9 @@ class Client : public QObject
 public:
     Client(QString);
     void commentsAdded(RVA, QString);
-    void (*onCommentsAdded)(RVA, QString);
+    std::function<void(RVA, QString)> onCommentsAdded;
     void commentsDeleted(RVA);
-    void (*onCommentsDeleted)(RVA);
+    std::function<void(RVA)> onCommentsDeleted;
 };
 
 #endif // CLIENT_H
