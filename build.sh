@@ -19,7 +19,7 @@ lrelease ./src/Cutter.pro
 r2 -v >/dev/null 2>&1
 if [ $? = 0 ]; then
 	R2COMMIT=$(r2 -v | tail -n1 | sed "s,commit: \\(.*\\) build.*,\\1,")
-	SUBMODULE=$(git submodule | awk '{print $1}')
+	SUBMODULE=$(git submodule | head -n 1 | awk '{print $1}')
 	if [ "$R2COMMIT" = "$SUBMODULE" ]; then
 		BUILDR2=0
 	fi
