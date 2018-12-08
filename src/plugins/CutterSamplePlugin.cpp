@@ -21,7 +21,7 @@ CutterDockWidget* CutterSamplePlugin::setupInterface(MainWindow *main, QAction* 
     dockable = new CutterSamplePluginWidget(main, actions);
     return dockable;
 }
-QPushButton * button;
+
 CutterSamplePluginWidget::CutterSamplePluginWidget(MainWindow *main, QAction *action) :
     CutterDockWidget(main, action)
 {
@@ -37,43 +37,32 @@ CutterSamplePluginWidget::CutterSamplePluginWidget(MainWindow *main, QAction *ac
     text->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
     layout->addWidget(text);
 
-    button = new QPushButton(content);
+    QPushButton* button = new QPushButton(content);
     button->setText("Want a fortune?");
     button->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Maximum);
     button->setMaximumHeight(50);
     button->setMaximumWidth(200);
     layout->addWidget(button);
     layout->setAlignment(button, Qt::AlignHCenter);
-
-    connect(Core(), &CutterCore::seekChanged, this, &CutterSamplePluginWidget::on_seekChanged);
+    connect(Core(), &CutterCore::seekChanged, this, &CutterSamplePluginWidget::seekChanged);
+    connect(Core(), &CutterCore::functionRenamed, this, &CutterSamplePluginWidget::functionRenamed);
     connect(Core(), &CutterCore::commentsAdded, this, &CutterSamplePluginWidget::commentsAdded);
     connect(Core(), &CutterCore::commentsRemoved, this, &CutterSamplePluginWidget::commentsRemoved);
-    connect(button, &QPushButton::clicked, this, &CutterSamplePluginWidget::on_buttonClicked);
 }
 
-void CutterSamplePluginWidget::on_seekChanged(RVA addr)
+void CutterSamplePluginWidget::seekChanged(RVA addr)
 {
-    Q_UNUSED(addr);
-    QString res;
-    {
-        TempConfig tempConfig;
-        tempConfig.set("scr.color", 0);
-        res = Core()->cmd("?E `pi 1`");
-    }
-    text->setText(res);
-}
-
-void CutterSamplePluginWidget::on_buttonClicked()
-{
-    QString res = Core()->cmd("?E `fo`");
-    text->setText(res);
+    text->setText("Seek " + QString::number(addr));
 }
 
 void CutterSamplePluginWidget::commentsAdded(RVA addr, const QString &cmt){
-    button->setText("Added "+QString::number(addr) + ": " + cmt);
+    text->setText("Added "+QString::number(addr) + ": " + cmt);
 }
 
+void CutterSamplePluginWidget::functionRenamed(const QString &oldName, const QString &newName){
+    text->setText("Renamed fn " + oldName + " -> " + newName);
+}
 
 void CutterSamplePluginWidget::commentsRemoved(RVA addr){
-    button->setText("Removed " +QString::number(addr));
+    text->setText("Removed " +QString::number(addr));
 }

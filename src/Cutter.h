@@ -433,7 +433,9 @@ public:
 
     /* Comments */
     void setComment(RVA addr, const QString &cmt);
+    void setCommentWithoutSignal(RVA addr, const QString &cmt);
     void delComment(RVA addr);
+    void delCommentWithoutSignal(RVA addr);
     void setImmediateBase(const QString &r2BaseName, RVA offset = RVA_INVALID);
     void setCurrentBits(int bits, RVA offset = RVA_INVALID);
 
