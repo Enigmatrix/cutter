@@ -1,6 +1,9 @@
-HEADERS        += CutterSamplePlugin.h CutterPlugin.h
+HEADERS        += CutterSamplePlugin.h CutterPlugin.h \
+    client.h \
+    types.h
 INCLUDEPATH    += ../ ../../build
-SOURCES        += CutterSamplePlugin.cpp
+SOURCES        += CutterSamplePlugin.cpp \
+    client.cpp
 
 QMAKE_POST_LINK += "mkdir -p $${_PRO_FILE_PWD_}/../../build/plugins/ && cp $${_PRO_FILE_PWD_}/*.so $${_PRO_FILE_PWD_}/../../build/plugins/$$escape_expand(\n\t)"
 
@@ -11,5 +14,5 @@ unix:exists(/usr/include/libr) {
 
 TEMPLATE        = lib
 CONFIG         += plugin
-QT             += widgets
+QT             += widgets network
 TARGET          = PluginSample
