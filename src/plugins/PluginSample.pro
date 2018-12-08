@@ -9,6 +9,11 @@ unix:exists(/usr/include/libr) {
     INCLUDEPATH += /usr/include/libr
 }
 
+# macOS
+unix:exists(/usr/local/include/libr) {
+    INCLUDEPATH += /usr/local/include/libr
+}
+
 TEMPLATE        = lib
 CONFIG         += plugin
 QT             += widgets
