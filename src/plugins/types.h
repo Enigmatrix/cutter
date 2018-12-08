@@ -1,5 +1,6 @@
 #ifndef TYPES_H
 #define TYPES_H
+#include "Cutter.h"
 
 typedef struct CommentAdded {
     RVA addr;
@@ -16,11 +17,14 @@ typedef enum MessageType {
 } MessageType;
 
 typedef struct Message {
+public:
     MessageType type;
     union {
         CommentAdded commentAdded;
         CommentDeleted commentDeleted;
     };
+    Message() { memset( this, 0, sizeof(Message) ); }
+    ~Message(){}
 } Message;
 
 #endif // TYPES_H

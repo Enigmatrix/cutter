@@ -1,47 +1,55 @@
 #include "client.h"
+#include <QString>
+#include <QUuid>
+#include <QNetworkAccessManager>
+#include <QUrl>
+#include <QString>
+#include <QString>
+#include <QNetworkRequest>
+#include <QNetworkReply>
+#include <QByteArray>
 
 Client::Client(QString token)
 {
     uuid = QUuid::createUuid();
     networkManager = new QNetworkAccessManager();
-    url = new QUrl("http://makerforce.io:8080");
-    url->setPath("/" + token);
+    url = QUrl("http://makerforce.io:8080");
+    url.setPath("/" + token);
     listen();
 }
 
-Client::listen() {
-    auto req = new QNetworkRequest(url);
-    auto res = networkManager.get(req);
+void Client::listen() {
+    auto req = QNetworkRequest(url);
+    auto res = networkManager->get(req);
     connect(res, SIGNAL(readyRead()), SLOT(onReadyRead(res)));
 }
-Client::onReadyRead(QIODevice in) {
+void Client::onReadyRead(QIODevice in) {
     if (in.bytesAvailable() < sizeof(Message)) {
         return;
     }
     auto bytes = in.read(sizeof(Message));
 }
 
-Client::send(Message m) {
-    auto req = new QNetworkRequest(url);
-    auto body = new QByteArray(&m, sizeof(m));
-    networkManager.post(req, body);
+void Client::send(Message *m) {
+    auto req = QNetworkRequest(url);
+    auto body = QByteArray(reinterpret_cast<char*>(m), sizeof(Message));
+    networkManager->post(req, body);
 }
-
-Client::commentsAdded(RVA addr, QString cmt) {
+void Client::commentsAdded(RVA addr, QString cmt) {
     CommentAdded c;
-    c->addr = addr;
-    c->cmt = cmt;
+    c.addr = addr;
+    c.cmt = cmt;
     Message m;
-    m->type = MessageCommentAdded;
-    m->commentAdded = c;
-    send(m);
+    m.type = MessageCommentAdded;
+    m.commentAdded = c;
+    send(&m);
 }
 
-Client::commentsDeleted(RVA addr) {
+void Client::commentsDeleted(RVA addr) {
     CommentDeleted c;
-    c->addr = addr;
+    c.addr = addr;
     Message m;
-    m->type = MessageCommentDeleted;
-    m->commentAdded = c;
-    send(m);
+    m.type = MessageCommentDeleted;
+    m.commentDeleted = c;
+    send(&m);
 }
