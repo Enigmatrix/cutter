@@ -4,6 +4,7 @@
 #include <QObject>
 #include <QtPlugin>
 #include "CutterPlugin.h"
+#include "client.h"
 
 class CutterSamplePlugin : public QObject, CutterPlugin
 {
@@ -25,6 +26,7 @@ public:
 
 private:
     QLabel* text;
+    Client* client;
 
 private slots:
     void seekChanged(RVA addr);

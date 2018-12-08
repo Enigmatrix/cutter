@@ -14,6 +14,7 @@
 #include "common/TempConfig.h"
 #include "common/Configuration.h"
 #include "MainWindow.h"
+#include "client.h"
 
 void CutterSamplePlugin::setupPlugin(CutterCore *core)
 {
@@ -79,7 +80,7 @@ void CutterSamplePluginWidget::createSessionClicked(){
         clipboard->setText(uuid);
     });
     msg.exec();
-    // CLIENT use this token everywhere
+    this->client = new Client(uuid);
 }
 
 void CutterSamplePluginWidget::joinSessionClicked(){
@@ -90,10 +91,12 @@ void CutterSamplePluginWidget::joinSessionClicked(){
     if(ok && !token.isEmpty()){
         // CLIENT connect with this token
     }
+    this->client = new Client(token);
 }
 
 void CutterSamplePluginWidget::endSessionClicked(){
-    // CLIENT session end
+    delete this->client;
+    this->client = nullptr;
 
     QMessageBox msg;
     msg.setText("Session ended");
@@ -107,12 +110,18 @@ void CutterSamplePluginWidget::seekChanged(RVA addr)
 
 void CutterSamplePluginWidget::commentsAdded(RVA addr, const QString &cmt){
     text->setText("Added "+QString::number(addr) + ": " + cmt);
+    if(!this->client) return;
+    this->client->commentsAdded(addr, cmt);
 }
 
 void CutterSamplePluginWidget::functionRenamed(const QString &oldName, const QString &newName){
     text->setText("Renamed fn " + oldName + " -> " + newName);
+    if(!this->client) return;
+    //this->client->functionRenamed(oldName, newName);
 }
 
 void CutterSamplePluginWidget::commentsRemoved(RVA addr){
     text->setText("Removed " +QString::number(addr));
+    if(!this->client) return;
+    this->client->commentsDeleted(addr);
 }
