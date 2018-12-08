@@ -24,8 +24,15 @@ PopUp::PopUp(QWidget *parent) : QWidget(parent)
                         "margin-bottom: 6px;"
                         "margin-left: 10px;"
                         "margin-right: 10px; }");
+    userName.setAlignment(Qt::AlignBottom | Qt::AlignRight);
+    userName.setStyleSheet("QLabel { color : black; "
+                        "background-color: rgba(0, 0, 0, 0%);"
+                        "font-size: 11px;"
+                        "margin-top: 3px;"
+                        "margin-right: 3px; }");
 
     layout.addWidget(&label, 0, 0);
+    layout.addWidget(&userName, 0, 0);
     setLayout(&layout);
 
     timer = new QTimer();
@@ -45,7 +52,7 @@ void PopUp::paintEvent(QPaintEvent *event)
     roundedRect.setWidth(rect().width() - 10);
     roundedRect.setHeight(rect().height() - 10);
 
-    painter.setBrush(QBrush(QColor(0xff,0x91,0x00,180)));
+    painter.setBrush(QBrush(QColor(0xff,0x57,0x22,180)));
     painter.setPen(Qt::NoPen);
 
     painter.drawRoundedRect(roundedRect, 10, 10);
@@ -53,6 +60,28 @@ void PopUp::paintEvent(QPaintEvent *event)
 
 void PopUp::setPopupText(const QString &text)
 {
+    userName.setText("");
+    label.setAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
+    label.setStyleSheet("QLabel { color : black; "
+                        "background-color: rgba(0, 0, 0, 0%);"
+                        "margin-top: 6px;"
+                        "margin-bottom: 6px;"
+                        "margin-left: 10px;"
+                        "margin-right: 10px; }");
+    label.setText(text);    // Set the text in the Label
+    adjustSize();           // With the recalculation notice sizes
+}
+
+void PopUp::setPopupText(const QString &text, const QString &name)
+{
+    userName.setText("- " + name);
+    label.setAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
+    label.setStyleSheet("QLabel { color : black; "
+                        "background-color: rgba(0, 0, 0, 0%);"
+                        "margin-top: 3px;"
+                        "margin-bottom: 16px;"
+                        "margin-left: 3px;"
+                        "margin-right: 16px; }");
     label.setText(text);    // Set the text in the Label
     adjustSize();           // With the recalculation notice sizes
 }

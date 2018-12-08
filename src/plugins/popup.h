@@ -24,6 +24,7 @@ protected:
 
 public slots:
     void setPopupText(const QString& text); // Setting text notification
+    void setPopupText(const QString& user, const QString& text);
     void show();                            /* own widget displaying method
                                              * It is necessary to pre-animation settings
                                              * */
@@ -36,6 +37,7 @@ private slots:
 
 private:
     QLabel label;
+    QLabel userName;
     QGridLayout layout;
     QPropertyAnimation animation;
     float popupOpacity;

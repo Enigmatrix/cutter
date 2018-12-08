@@ -36,6 +36,7 @@ CutterDockWidget* CutterSamplePlugin::setupInterface(MainWindow *main, QAction* 
 CutterSamplePluginWidget::CutterSamplePluginWidget(MainWindow *main, QAction *action) :
     CutterDockWidget(main, action)
 {
+    this->client = nullptr;
     QAction *createSessionAction = new QAction(tr("Create Session"));
     QAction *joinSessionAction = new QAction(tr("Join Session"));
     QAction *endSessionAction = new QAction(tr("End Session"));
@@ -62,6 +63,12 @@ CutterSamplePluginWidget::CutterSamplePluginWidget(MainWindow *main, QAction *ac
 void CutterSamplePluginWidget::showNotificationPopup(QString message)
 {
     this->popUp->setPopupText(message);
+    this->popUp->show();
+}
+
+void CutterSamplePluginWidget::showUserNotificationPopup(QString message, QString user)
+{
+    this->popUp->setPopupText(message, user);
     this->popUp->show();
 }
 
@@ -138,20 +145,20 @@ void CutterSamplePluginWidget::seekChanged(RVA addr)
 }
 
 void CutterSamplePluginWidget::commentsAdded(RVA addr, const QString &cmt){
-    showNotificationPopup("U Added "+QString::number(addr) + ": " + cmt);
-    if(!this->client) return;
+    showUserNotificationPopup("0x"+QString::number(addr, 16)+": \""+cmt+"\"", "Akash");
+    if(this->client == nullptr) return;
     this->client->commentsAdded(addr, cmt);
 }
 
 void CutterSamplePluginWidget::functionRenamed(const QString &oldName, const QString &newName){
     showNotificationPopup("U Renamed fn " + oldName + " -> " + newName);
-    if(!this->client) return;
+    if(this->client == nullptr) return;
     //this->client->functionRenamed(oldName, newName);
 }
 
 void CutterSamplePluginWidget::commentsRemoved(RVA addr){
     showNotificationPopup("U Removed " +QString::number(addr));
-    if(!this->client) return;
+    if(this->client == nullptr) return;
     this->client->commentsDeleted(addr);
 }
 

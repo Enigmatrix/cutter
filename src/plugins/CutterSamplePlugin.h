@@ -32,6 +32,7 @@ private:
 
 private slots:
     void showNotificationPopup(QString);
+    void showUserNotificationPopup(QString, QString);
 
     void createSession();
     void joinSession();
