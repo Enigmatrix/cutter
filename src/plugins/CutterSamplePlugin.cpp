@@ -224,22 +224,23 @@ void CutterSamplePluginWidget::commentsRemoved(RVA addr){
 
 void CutterSamplePluginWidget::setupClient(QString token, QString nick){
     this->client = new Client(token, nick);
-    this->client->onCommentsDeleted = std::bind(&CutterSamplePluginWidget::onCommentsRemoved, this, std::placeholders::_1);
-    this->client->onCommentsAdded = std::bind(&CutterSamplePluginWidget::onCommentsAdded, this, std::placeholders::_1, std::placeholders::_2);
+    this->client->onCommentsDeleted = std::bind(&CutterSamplePluginWidget::onCommentsRemoved, this, std::placeholders::_1, std::placeholders::_2);
+    this->client->onCommentsAdded = std::bind(&CutterSamplePluginWidget::onCommentsAdded, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3);
     //this->client->onFunctionRenamed = std::bind(&CutterSamplePluginWidget::onFunctionRenamed, this, std::placeholders::_1, std::placeholders::_2);
 }
 
 
-void CutterSamplePluginWidget::onCommentsRemoved(RVA addr){
-    showNotificationPopup("Moron Deleted "+QString::number(addr));
+void CutterSamplePluginWidget::onCommentsRemoved(QString nick, RVA addr){
+    showUserNotificationPopup("0x"+QString::number(addr, 16)+": <Cmt Rmved>", nick);
     Core()->delCommentWithoutSignal(addr);
 }
 
-void CutterSamplePluginWidget::onCommentsAdded(RVA addr, QString cmt){
-    showNotificationPopup("Moron Added "+QString::number(addr)+" :"+cmt);
+void CutterSamplePluginWidget::onCommentsAdded(QString nick, RVA addr, QString cmt){
+    showUserNotificationPopup("0x"+QString::number(addr, 16)+": \""+cmt+"\"", nick);
     Core()->setCommentWithoutSignal(addr, cmt);
 }
 
-void CutterSamplePluginWidget::onFunctionRenamed(QString oldName, QString newName){
+void CutterSamplePluginWidget::onFunctionRenamed(QString nick, QString oldName, QString newName){
+    showUserNotificationPopup("Renamed "+oldName+" to "+newName, nick);
     Core()->renameFunctionWithoutSignal(oldName, newName);
 }

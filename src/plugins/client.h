@@ -25,9 +25,9 @@ class Client : public QObject
 public:
     Client(QString, QString);
     void commentsAdded(RVA, QString);
-    std::function<void(RVA, QString)> onCommentsAdded;
+    std::function<void(QString, RVA, QString)> onCommentsAdded;
     void commentsDeleted(RVA);
-    std::function<void(RVA)> onCommentsDeleted;
+    std::function<void(QString, RVA)> onCommentsDeleted;
 public slots:
     void onReadyRead();
 };

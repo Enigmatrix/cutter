@@ -46,14 +46,14 @@ void Client::understandMessage(model::Message* m) {
     {
             if(this->onCommentsAdded) return;
             auto cntAdd = m->content_as_CommentAdded();
-            this->onCommentsAdded(cntAdd->addr(), QString::fromLocal8Bit(cntAdd->cmt()->c_str()));
+            this->onCommentsAdded(QString::fromLocal8Bit(m->username()->c_str()) ,cntAdd->addr(), QString::fromLocal8Bit(cntAdd->cmt()->c_str()));
             break;
     }
         case model::MessageContent_CommentDeleted:
     {
             if(this->onCommentsDeleted) return;
             auto cntDel = m->content_as_CommentDeleted();
-            this->onCommentsDeleted(cntDel->addr());
+            this->onCommentsDeleted(QString::fromLocal8Bit(m->username()->c_str()), cntDel->addr());
             break;
     }
     }
