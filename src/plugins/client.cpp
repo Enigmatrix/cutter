@@ -16,7 +16,7 @@ Client::Client(QString token, QString nick)
     uuid = QUuid::createUuid();
     networkManager = new QNetworkAccessManager();
     url = QUrl("http://makerforce.io:8080");
-    //do smth with nick here
+    nick = nick;
     url.setPath("/" + token);
     listen();
 }
@@ -29,15 +29,35 @@ void Client::listen() {
     qDebug() << res;
     connect(res, &QNetworkReply::readyRead, this, &Client::onReadyRead);
 }
+bool wantsHeader = true;
+int consumeBodySize = 0;
 void Client::onReadyRead() {
     qDebug() << "ready";
-    qDebug() << res;
-    if (res->bytesAvailable() < sizeof(model::Message)) {
+    int consume = 0;
+    switch (wantsHeader) {
+    case true:
+        consume = 2;
+        break;
+    case false:
+        consume = consumeBodySize;
+        break;
+    }
+    if (res->bytesAvailable() < consume) {
         return;
     }
-    auto bytes = res->read(sizeof(model::Message));
-    auto m = reinterpret_cast<model::Message*>(bytes.data());
-    understandMessage(m);
+    auto bytes = res->read(consume);
+    switch (wantsHeader) {
+    case true:
+        consumeBodySize = (static_cast<unsigned int>(bytes[0]) & 0xFF) << 8
+                        + (static_cast<unsigned int>(bytes[1]) & 0xFF);
+        wantsHeader = false;
+        break;
+    case false:
+        wantsHeader = true;
+        auto m = model::GetMessage(bytes);
+        understandMessage(const_cast<model::Message*>(m));
+        break;
+    }
 }
 
 void Client::understandMessage(model::Message* m) {
