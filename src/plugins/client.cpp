@@ -61,6 +61,22 @@ void Client::onReadyRead() {
 }
 
 void Client::understandMessage(model::Message* m) {
+    switch(m->content_type()){
+        case model::MessageContent_CommentAdded:
+    {
+            if(this->onCommentsAdded) return;
+            auto cntAdd = m->content_as_CommentAdded();
+            this->onCommentsAdded(cntAdd->addr(), QString::fromLocal8Bit(cntAdd->cmt()->c_str()));
+            break;
+    }
+        case model::MessageContent_CommentDeleted:
+    {
+            if(this->onCommentsDeleted) return;
+            auto cntDel = m->content_as_CommentDeleted();
+            this->onCommentsDeleted(cntDel->addr());
+            break;
+    }
+    }
 }
 
 void Client::send(flatbuffers::FlatBufferBuilder *fbb) {
