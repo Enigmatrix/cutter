@@ -1,0 +1,19 @@
+namespace model;
+
+union MessageContent { CommentAdded, CommentDeleted }
+
+table Message {
+        username: string;
+        content: MessageContent;
+}
+
+
+table CommentAdded {
+        addr: uint64;
+        cmt: string;
+}
+
+table CommentDeleted {
+        addr: uint64;
+}
+root_type Message;

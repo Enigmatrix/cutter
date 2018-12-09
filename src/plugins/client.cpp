@@ -8,6 +8,8 @@
 #include <QNetworkRequest>
 #include <QNetworkReply>
 #include <QByteArray>
+#include "model_generated.h"
+#include "flatbuffers/flatbuffers.h"
 
 Client::Client(QString token, QString nick)
 {
@@ -30,31 +32,24 @@ void Client::listen() {
 void Client::onReadyRead() {
     qDebug() << "ready";
     qDebug() << res;
-    if (res->bytesAvailable() < sizeof(Message)) {
+    if (res->bytesAvailable() < sizeof(model::Message)) {
         return;
     }
-    auto bytes = res->read(sizeof(Message));
-    auto m = reinterpret_cast<Message*>(bytes.data());
+    auto bytes = res->read(sizeof(model::Message));
+    auto m = reinterpret_cast<model::Message*>(bytes.data());
     understandMessage(m);
 }
 
-void Client::understandMessage(Message* m) {
-    switch (m->type) {
-        case MessageCommentAdded:
-            if (onCommentsAdded) onCommentsAdded(m->commentAdded.addr, m->commentAdded.cmt);
-            break;
-        case MessageCommentDeleted:
-            if (onCommentsDeleted) onCommentsDeleted(m->commentDeleted.addr);
-            break;
-    }
+void Client::understandMessage(model::Message* m) {
+
 }
 
-void Client::send(Message *m) {
+void Client::send(flatbuffers::FlatBufferBuilder *fbb) {
     qDebug() << "making req..";
     auto req = QNetworkRequest(url);
     qDebug() << &req;
     qDebug() << "making byte array...";
-    auto body = QByteArray(reinterpret_cast<char*>(m), sizeof(Message));
+    auto body = QByteArray(reinterpret_cast<char*>(fbb->GetBufferPointer()), fbb->GetSize());
     qDebug() << &body;
     qDebug() << "posting...";
     networkManager->post(req, body);
@@ -62,23 +57,17 @@ void Client::send(Message *m) {
 }
 void Client::commentsAdded(RVA addr, QString cmt) {
     qDebug() << "cmts add";
-    CommentAdded c;
-    c.addr = addr;
-    c.cmt = cmt;
-    qDebug() << "cmts added struct created";
-    Message m;
-    m.type = MessageCommentAdded;
-    m.commentAdded = c;
-    qDebug() << "cmts sending";
-    send(&m);
+    flatbuffers::FlatBufferBuilder fbb(1024);
+    auto msg = model::CreateMessage(fbb, fbb.CreateString("username"), model::MessageContent_CommentAdded,
+                         model::CreateCommentAdded(fbb, addr, fbb.CreateString(cmt.toStdString())).Union());
+
+    send(&fbb);
 }
 
 void Client::commentsDeleted(RVA addr) {
     qDebug() << "cmts rmved";
-    CommentDeleted c;
-    c.addr = addr;
-    Message m;
-    m.type = MessageCommentDeleted;
-    m.commentDeleted = c;
-    send(&m);
+    flatbuffers::FlatBufferBuilder fbb(1024);
+    auto msg = model::CreateMessage(fbb, fbb.CreateString("username"), model::MessageContent_CommentDeleted,
+                         model::CreateCommentDeleted(fbb, addr).Union());
+    send(&fbb);
 }

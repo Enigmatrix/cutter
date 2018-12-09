@@ -8,7 +8,7 @@
 #include <QObject>
 #include <functional>
 #include "CutterPlugin.h"
-#include "types.h"
+#include "model_generated.h"
 
 class Client : public QObject
 {
@@ -19,9 +19,9 @@ class Client : public QObject
     QUuid uuid;
     QString token;
     QNetworkReply* res;
-    void send(Message*);
+    void send(flatbuffers::FlatBufferBuilder*);
     void listen();
-    void understandMessage(Message*);
+    void understandMessage(model::Message*);
 public:
     Client(QString, QString);
     void commentsAdded(RVA, QString);
