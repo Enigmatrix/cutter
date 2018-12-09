@@ -36,21 +36,22 @@ CutterDockWidget* CutterSamplePlugin::setupInterface(MainWindow *main, QAction* 
 CutterSamplePluginWidget::CutterSamplePluginWidget(MainWindow *main, QAction *action) :
     CutterDockWidget(main, action)
 {
+    this->main = main;
+
     this->client = nullptr;
     QAction *createSessionAction = new QAction(tr("Create Session"));
     QAction *joinSessionAction = new QAction(tr("Join Session"));
-    QAction *endSessionAction = new QAction(tr("End Session"));
+    this->endSessionAction = new QAction(tr("End Session"));
 
     QMenu* pluginsMenu = main->menuBar()->findChild<QMenu*>("menuPlugins");
-    QMenu* collabMenu = pluginsMenu->addMenu(tr("Collab"));
+    this->collabMenu = pluginsMenu->addMenu(tr("Collab"));
 
-    collabMenu->addAction(createSessionAction);
-    collabMenu->addAction(joinSessionAction);
-    collabMenu->addAction(endSessionAction);
+    this->collabMenu->addAction(createSessionAction);
+    this->collabMenu->addAction(joinSessionAction);
 
     connect(createSessionAction, &QAction::triggered, this, &CutterSamplePluginWidget::createSession);
     connect(joinSessionAction, &QAction::triggered, this, &CutterSamplePluginWidget::joinSession);
-    connect(endSessionAction, &QAction::triggered, this, &CutterSamplePluginWidget::endSession);
+    connect(this->endSessionAction, &QAction::triggered, this, &CutterSamplePluginWidget::endSession);
 
     connect(Core(), &CutterCore::seekChanged, this, &CutterSamplePluginWidget::seekChanged);
     connect(Core(), &CutterCore::functionRenamed, this, &CutterSamplePluginWidget::functionRenamed);
@@ -94,6 +95,16 @@ QString getNickNamePopup(){
     return nullptr;
 }
 
+void CutterSamplePluginWidget::addEndSessionMenuAction()
+{
+    this->collabMenu->addAction(this->endSessionAction);
+}
+
+void CutterSamplePluginWidget::removeEndSessionMenuAction()
+{
+    this->collabMenu->removeAction(this->endSessionAction);
+}
+
 void CutterSamplePluginWidget::createSession()
 {
     auto token = generateToken();
@@ -106,9 +117,11 @@ void CutterSamplePluginWidget::createSession()
                               "%1"))
             .arg(token);
     QMessageBox::information(this, tr("Create Collab Session"), message);
-    auto nick = getNickNamePopup();
+    QString nick = getNickNamePopup();
     if(nick == nullptr) return
+
     setupClient(token, nick);
+    this->addEndSessionMenuAction();
 }
 
 void CutterSamplePluginWidget::joinSession()
@@ -123,12 +136,12 @@ void CutterSamplePluginWidget::joinSession()
         if(nick == nullptr) return;
         setupClient(token, nick);
         showNotificationPopup(QString("Joined session %1.").arg(token));
+        this->addEndSessionMenuAction();
     }
 }
 
 void CutterSamplePluginWidget::endSession()
 {
-    if(!this->client) return;
     QMessageBox::StandardButton reply;
     reply = QMessageBox::question(this, tr("End Collab Session"), tr("Are you sure you want to terminate this collab session?"),
                                   QMessageBox::Yes|QMessageBox::No);
@@ -136,6 +149,7 @@ void CutterSamplePluginWidget::endSession()
         delete this->client;
         this->client = nullptr;
         showNotificationPopup(QString(tr("Collab session ended.")));
+        this->removeEndSessionMenuAction();
     }
 }
 

@@ -2,6 +2,8 @@
 #define CUTTERSAMPLEPLUGIN_H
 
 #include <QObject>
+#include <QMenu>
+#include <QAction>
 #include <QtPlugin>
 #include "popup.h"
 #include "CutterPlugin.h"
@@ -28,11 +30,16 @@ public:
 private:
     PopUp* popUp;
     Client* client;
+    MainWindow* main;
+    QMenu* collabMenu;
+    QAction* endSessionAction;
     void setupClient(QString token, QString nick);
 
 private slots:
     void showNotificationPopup(QString);
     void showUserNotificationPopup(QString, QString);
+    void addEndSessionMenuAction();
+    void removeEndSessionMenuAction();
 
     void createSession();
     void joinSession();
