@@ -39,18 +39,18 @@ CutterSamplePluginWidget::CutterSamplePluginWidget(MainWindow *main, QAction *ac
     this->main = main;
 
     this->client = nullptr;
-    QAction *createSessionAction = new QAction(tr("Create Session"));
-    QAction *joinSessionAction = new QAction(tr("Join Session"));
+    this->createSessionAction = new QAction(tr("Create Session"));
+    this->joinSessionAction = new QAction(tr("Join Session"));
     this->endSessionAction = new QAction(tr("End Session"));
 
     QMenu* pluginsMenu = main->menuBar()->findChild<QMenu*>("menuPlugins");
     this->collabMenu = pluginsMenu->addMenu(tr("Collab"));
 
-    this->collabMenu->addAction(createSessionAction);
-    this->collabMenu->addAction(joinSessionAction);
+    this->collabMenu->addAction(this->createSessionAction);
+    this->collabMenu->addAction(this->joinSessionAction);
 
-    connect(createSessionAction, &QAction::triggered, this, &CutterSamplePluginWidget::createSession);
-    connect(joinSessionAction, &QAction::triggered, this, &CutterSamplePluginWidget::joinSession);
+    connect(this->createSessionAction, &QAction::triggered, this, &CutterSamplePluginWidget::createSession);
+    connect(this->joinSessionAction, &QAction::triggered, this, &CutterSamplePluginWidget::joinSession);
     connect(this->endSessionAction, &QAction::triggered, this, &CutterSamplePluginWidget::endSession);
 
     connect(Core(), &CutterCore::seekChanged, this, &CutterSamplePluginWidget::seekChanged);
@@ -97,12 +97,16 @@ QString getNickNamePopup(){
 
 void CutterSamplePluginWidget::addEndSessionMenuAction()
 {
+    this->collabMenu->removeAction(this->createSessionAction);
+    this->collabMenu->removeAction(this->joinSessionAction);
     this->collabMenu->addAction(this->endSessionAction);
 }
 
 void CutterSamplePluginWidget::removeEndSessionMenuAction()
 {
     this->collabMenu->removeAction(this->endSessionAction);
+    this->collabMenu->addAction(this->createSessionAction);
+    this->collabMenu->addAction(this->joinSessionAction);
 }
 
 void CutterSamplePluginWidget::createSession()

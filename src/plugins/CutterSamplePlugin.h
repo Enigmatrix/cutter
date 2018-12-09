@@ -32,6 +32,8 @@ private:
     Client* client;
     MainWindow* main;
     QMenu* collabMenu;
+    QAction* createSessionAction;
+    QAction* joinSessionAction;
     QAction* endSessionAction;
     void setupClient(QString token, QString nick);
 
