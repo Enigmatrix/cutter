@@ -49,16 +49,18 @@ void Client::onReadyRead() {
     if (res->bytesAvailable() < consume) {
         return;
     }
-    auto bytes = res->read(consume);
+    auto b = res->read(consume);
+        qDebug() << b;
     switch (wantsHeader) {
     case true:
-        consumeBodySize = (static_cast<unsigned int>(bytes[0]) & 0xFF) << 8
-                        + (static_cast<unsigned int>(bytes[1]) & 0xFF);
+        consumeBodySize = ((static_cast<unsigned int>(b[0]) & 0xFF) << 8)
+                        + (static_cast<unsigned int>(b[1]) & 0xFF);
+        qDebug() << consumeBodySize;
         wantsHeader = false;
         break;
     case false:
         wantsHeader = true;
-        auto m = model::GetMessage(bytes);
+        auto m = model::GetMessage(b.data());
         understandMessage(const_cast<model::Message*>(m));
         break;
     }
