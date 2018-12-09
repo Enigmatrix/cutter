@@ -36,6 +36,7 @@ bool wantsHeader = true;
 int consumeBodySize = 0;
 void Client::onReadyRead() {
     qDebug() << "ready";
+    qDebug() << res->bytesAvailable();
     int consume = 0;
     switch (wantsHeader) {
     case true:
@@ -60,6 +61,9 @@ void Client::onReadyRead() {
         auto m = model::GetMessage(bytes);
         understandMessage(const_cast<model::Message*>(m));
         break;
+    }
+    if (res->bytesAvailable() > 0) {
+        onReadyRead();
     }
 }
 
