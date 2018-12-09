@@ -42,6 +42,7 @@ inline const char * const *EnumNamesMessageContent() {
 }
 
 inline const char *EnumNameMessageContent(MessageContent e) {
+  if (e < MessageContent_NONE || e > MessageContent_CommentDeleted) return "";
   const size_t index = static_cast<int>(e);
   return EnumNamesMessageContent()[index];
 }
@@ -62,7 +63,7 @@ bool VerifyMessageContent(flatbuffers::Verifier &verifier, const void *obj, Mess
 bool VerifyMessageContentVector(flatbuffers::Verifier &verifier, const flatbuffers::Vector<flatbuffers::Offset<void>> *values, const flatbuffers::Vector<uint8_t> *types);
 
 struct Message FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
-  enum {
+  enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
     VT_USERNAME = 4,
     VT_CONTENT_TYPE = 6,
     VT_CONTENT = 8
@@ -86,7 +87,7 @@ struct Message FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
   bool Verify(flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
            VerifyOffset(verifier, VT_USERNAME) &&
-           verifier.Verify(username()) &&
+           verifier.VerifyString(username()) &&
            VerifyField<uint8_t>(verifier, VT_CONTENT_TYPE) &&
            VerifyOffset(verifier, VT_CONTENT) &&
            VerifyMessageContent(verifier, content(), content_type()) &&
@@ -143,15 +144,16 @@ inline flatbuffers::Offset<Message> CreateMessageDirect(
     const char *username = nullptr,
     MessageContent content_type = MessageContent_NONE,
     flatbuffers::Offset<void> content = 0) {
+  auto username__ = username ? _fbb.CreateString(username) : 0;
   return model::CreateMessage(
       _fbb,
-      username ? _fbb.CreateString(username) : 0,
+      username__,
       content_type,
       content);
 }
 
 struct CommentAdded FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
-  enum {
+  enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
     VT_ADDR = 4,
     VT_CMT = 6
   };
@@ -165,7 +167,7 @@ struct CommentAdded FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
     return VerifyTableStart(verifier) &&
            VerifyField<uint64_t>(verifier, VT_ADDR) &&
            VerifyOffset(verifier, VT_CMT) &&
-           verifier.Verify(cmt()) &&
+           verifier.VerifyString(cmt()) &&
            verifier.EndTable();
   }
 };
@@ -205,14 +207,15 @@ inline flatbuffers::Offset<CommentAdded> CreateCommentAddedDirect(
     flatbuffers::FlatBufferBuilder &_fbb,
     uint64_t addr = 0,
     const char *cmt = nullptr) {
+  auto cmt__ = cmt ? _fbb.CreateString(cmt) : 0;
   return model::CreateCommentAdded(
       _fbb,
       addr,
-      cmt ? _fbb.CreateString(cmt) : 0);
+      cmt__);
 }
 
 struct CommentDeleted FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
-  enum {
+  enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
     VT_ADDR = 4
   };
   uint64_t addr() const {

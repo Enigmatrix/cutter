@@ -18,6 +18,7 @@ class Client : public QObject
     QUrl url;
     QUuid uuid;
     QString token;
+    QString nick;
     QNetworkReply* res;
     void send(flatbuffers::FlatBufferBuilder*);
     void listen();
