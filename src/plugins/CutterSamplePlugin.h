@@ -35,14 +35,16 @@ private:
     QAction* createSessionAction;
     QAction* joinSessionAction;
     QAction* endSessionAction;
+    QLabel* informationText;
     void setupClient(QString token, QString nick);
-
-private slots:
     void showNotificationPopup(QString);
     void showUserNotificationPopup(QString, QString);
     void addEndSessionMenuAction();
     void removeEndSessionMenuAction();
+    void updateSessionInformation(QString, QList<QString>);
+    void clearSessionInformation();
 
+private slots:
     void createSession();
     void joinSession();
     void endSession();

@@ -38,6 +38,23 @@ CutterSamplePluginWidget::CutterSamplePluginWidget(MainWindow *main, QAction *ac
 {
     this->main = main;
 
+    this->setObjectName("CutterSamplePluginWidget");
+    this->setWindowTitle("Collab");
+    QWidget *content = new QWidget();
+    this->setWidget(content);
+
+    QVBoxLayout *layout = new QVBoxLayout(this);
+    content->setLayout(layout);
+
+    this->informationText = new QLabel(content);
+    this->informationText->setFont(Config()->getFont());
+    this->informationText->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
+    this->informationText->setAlignment(Qt::AlignTop|Qt::AlignLeft);
+    this->informationText->setWordWrap(true);
+    layout->addWidget(this->informationText);
+
+    this->clearSessionInformation();
+
     this->client = nullptr;
     this->createSessionAction = new QAction(tr("Create Session"));
     this->joinSessionAction = new QAction(tr("Join Session"));
@@ -58,8 +75,26 @@ CutterSamplePluginWidget::CutterSamplePluginWidget(MainWindow *main, QAction *ac
     connect(Core(), &CutterCore::commentsAdded, this, &CutterSamplePluginWidget::commentsAdded);
     connect(Core(), &CutterCore::commentsRemoved, this, &CutterSamplePluginWidget::commentsRemoved);
 
-    //main->findChild<DrawChildren>("DisassemblyWidget")
     this->popUp = new PopUp();
+}
+
+void CutterSamplePluginWidget::updateSessionInformation(QString token, QList<QString> names)
+{
+    QString info = QString("Connected to session with token %1. \n\n"
+                           "Users online:\n").arg(token);
+    foreach (QString name, names)
+    {
+        info.append(QString("%1\n").arg(name));
+    }
+
+    this->informationText->setText(info);
+}
+
+void CutterSamplePluginWidget::clearSessionInformation()
+{
+    this->informationText->setText("Not connected to any sessions. \n\n"
+                                   "Go to Plugins->Collab->Create Session to create a new session, "
+                                   "or Plugins->Collab->Join Session to join an existing one.");
 }
 
 void CutterSamplePluginWidget::showNotificationPopup(QString message)
@@ -126,6 +161,9 @@ void CutterSamplePluginWidget::createSession()
 
     setupClient(token, nick);
     this->addEndSessionMenuAction();
+
+    QList<QString> names({nick, "daniel", "ambrose", "akash"});
+    this->updateSessionInformation(token, names);
 }
 
 void CutterSamplePluginWidget::joinSession()
@@ -141,6 +179,9 @@ void CutterSamplePluginWidget::joinSession()
         setupClient(token, nick);
         showNotificationPopup(QString("Joined session %1.").arg(token));
         this->addEndSessionMenuAction();
+
+        QList<QString> names({nick, "daniel, ambrose, akash"});
+        this->updateSessionInformation(token, names);
     }
 }
 
@@ -154,6 +195,7 @@ void CutterSamplePluginWidget::endSession()
         this->client = nullptr;
         showNotificationPopup(QString(tr("Collab session ended.")));
         this->removeEndSessionMenuAction();
+        this->clearSessionInformation();
     }
 }
 
