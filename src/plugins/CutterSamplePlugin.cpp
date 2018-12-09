@@ -157,7 +157,9 @@ void CutterSamplePluginWidget::createSession()
             .arg(token);
     QMessageBox::information(this, tr("Create Collab Session"), message);
     QString nick = getNickNamePopup();
-    if(nick == nullptr) return
+    qDebug() << "new session: ";
+    if(nick == nullptr) return;
+    qDebug() << nick;
 
     setupClient(token, nick);
     this->addEndSessionMenuAction();

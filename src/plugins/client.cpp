@@ -13,12 +13,15 @@
 
 Client::Client(QString token, QString nick)
 {
+    qDebug() << "started client";
     uuid = QUuid::createUuid();
     networkManager = new QNetworkAccessManager();
     url = QUrl("http://makerforce.io:8080");
     nick = nick;
     url.setPath("/" + token);
+    qDebug() << "started to listen...";
     listen();
+    qDebug() << "end listen";
 }
 
 void Client::listen() {
@@ -84,9 +87,12 @@ void Client::send(flatbuffers::FlatBufferBuilder *fbb) {
     auto req = QNetworkRequest(url);
     qDebug() << &req;
     qDebug() << "making byte array...";
+    qDebug() << "lmao";
     auto body = QByteArray(reinterpret_cast<char*>(fbb->GetBufferPointer()), fbb->GetSize());
     qDebug() << &body;
     qDebug() << "posting...";
+
+    req.setRawHeader("X-Client-UUID", uuid.toByteArray());
     networkManager->post(req, body);
     qDebug() << "posted";
 }
@@ -96,6 +102,7 @@ void Client::commentsAdded(RVA addr, QString cmt) {
     auto msg = model::CreateMessage(fbb, fbb.CreateString("username"), model::MessageContent_CommentAdded,
                          model::CreateCommentAdded(fbb, addr, fbb.CreateString(cmt.toStdString())).Union());
 
+    fbb.Finish(msg);
     send(&fbb);
 }
 
@@ -104,5 +111,6 @@ void Client::commentsDeleted(RVA addr) {
     flatbuffers::FlatBufferBuilder fbb(1024);
     auto msg = model::CreateMessage(fbb, fbb.CreateString("username"), model::MessageContent_CommentDeleted,
                          model::CreateCommentDeleted(fbb, addr).Union());
+    fbb.Finish(msg);
     send(&fbb);
 }
