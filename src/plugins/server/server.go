@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/binary"
 	"io"
 	"io/ioutil"
 	"log"
@@ -88,6 +89,9 @@ func subscribe(scope, uuid string, w io.Writer) {
 			log.Print("closed")
 			return
 		}
+		b := []byte{0, 0}
+		binary.BigEndian.PutUint16(b, uint16(len(data)))
+		_, _ = w.Write(b)
 		n, err := w.Write(data)
 		if err != nil {
 			log.Print("disconnected")
